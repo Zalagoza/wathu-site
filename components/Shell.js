@@ -30,6 +30,19 @@ export default function Shell({ user, recent, unread, footer, children }) {
   const path = usePathname();
   const router = useRouter();
   useEffect(() => setOpen(false), [path]);
+  // freeze the page behind the open menu, close it on Escape, and close it if the phone is rotated to a wide layout
+  useEffect(() => {
+    document.body.style.overflow = open ? 'hidden' : '';
+    const esc = (e) => { if (e.key === 'Escape') setOpen(false); };
+    window.addEventListener('keydown', esc);
+    return () => { document.body.style.overflow = ''; window.removeEventListener('keydown', esc); };
+  }, [open]);
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 821px)');
+    const f = () => { if (mq.matches) setOpen(false); };
+    if (mq.addEventListener) mq.addEventListener('change', f); else mq.addListener(f);
+    return () => { if (mq.removeEventListener) mq.removeEventListener('change', f); else mq.removeListener(f); };
+  }, []);
 
   async function logout() {
     await fetch('/api/auth/logout', { method: 'POST' });
@@ -81,7 +94,7 @@ export default function Shell({ user, recent, unread, footer, children }) {
             {href === '/alerts' && unread > 0 && <span className="badge">{unread}</span>}
           </Link>
         ))}
-        <button className="tb" onClick={() => setOpen(true)} aria-label="Open menu"><span className="tic">☰</span><span>Menu</span></button>
+        <button className="tb" onClick={() => setOpen(true)} aria-label="Open menu" aria-expanded={open}><span className="tic">☰</span><span>Menu</span></button>
       </nav>
       {open && <div className="scrim" onClick={() => setOpen(false)} />}
       <div className="main" id="content">
