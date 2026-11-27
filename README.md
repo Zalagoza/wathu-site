@@ -18,6 +18,16 @@ Change the time with IDLE_MINUTES in lib/auth.js and IDLE_MS in components/IdleL
 /cookies (cookie policy), /in (sign in), /join (create account), /inbox (messages), /alerts (notifications), /e/ID and /b/ID (request forms), /folio (our work, projects), /news (offers and updates).
 Old addresses redirect to these (see next.config.mjs).
 
+## Search engine optimisation (SEO)
+Built in: a page per category (/c/web-design), keyword titles and descriptions, canonical addresses, sitemap.xml, robots.txt,
+structured data (business, services, breadcrumbs, FAQ, articles, projects) and fast mobile pages.
+After going live:
+1. Add the site in Google Search Console, verify it (GOOGLE_SITE_VERIFICATION) and submit https://YOUR-SITE/sitemap.xml. Do the same in Bing Webmaster Tools.
+2. Create and verify a free Google Business Profile for the studio. It is the biggest local search boost.
+3. Fill in the Footer tab (address, phone, WhatsApp, socials) and add real client testimonials.
+4. Post news or projects regularly from the admin. Fresh, useful pages are what rank.
+5. Redirect www to the main address in your Vercel domain settings so there is one version of the site.
+
 ## Link previews (WhatsApp, Facebook, X)
 Every page has title, description and a preview image made at /og. Set NEXT_PUBLIC_SITE_URL to your real address.
 To refresh a cached preview use the Facebook Sharing Debugger.

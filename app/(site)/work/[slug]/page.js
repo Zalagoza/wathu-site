@@ -7,6 +7,8 @@ import { svcPath } from '@/lib/text';
 import { money } from '@/lib/util';
 import ServiceCard from '@/components/ServiceCard';
 import ShareButton from '@/components/ShareButton';
+import JsonLd from '@/components/JsonLd';
+import { crumbsSchema, serviceSchema } from '@/lib/schema';
 
 async function load(slug) {
   const id = parseInt(String(slug), 10);
@@ -33,14 +35,24 @@ export default async function ServicePage({ params }) {
   const s = await load(params.slug);
   if (!s) notFound();
   const pro = s.cat_kind === 'professional';
+  let related = [];
+  try { related = await q(SERVICE_SELECT + ' where s.active and c.active and s.category = $1 and s.id <> $2 order by s.sort, s.id limit 3', [s.category, s.id]); } catch {}
   return (
     <div className="page">
-      <Link href={'/work'} className="crumb">← All services</Link>
+      <JsonLd data={serviceSchema(s)} />
+      <JsonLd data={crumbsSchema([['Home', '/'], ['Services', '/work'], [s.cat_label, '/c/' + s.category], [s.title, svcPath(s)]])} />
+      <nav className="crumbs" aria-label="Breadcrumb"><Link href="/">Home</Link><span>›</span><Link href="/work">Services</Link><span>›</span><Link href={'/c/' + s.category}>{s.cat_label}</Link></nav>
       <h1>{s.title}</h1>
       <p className="lead">{s.description}</p>
       <div style={{ maxWidth: 420, margin: '26px 0 20px' }}><ServiceCard s={s} /></div>
       <div className="row"><ShareButton title={s.title} text={s.title + ' from Wathu Digital Creations'} /></div>
       {pro && <p className="mute small" style={{ marginTop: 16 }}>Professional services are handled under our <Link href="/code" style={{ color: 'var(--gold)' }}>terms of conduct</Link> and start with a signed letter of engagement.</p>}
+      {related.length > 0 && (
+        <section style={{ marginTop: 44 }}>
+          <h2>More in {s.cat_label}</h2>
+          <div className="grid">{related.map((r) => <ServiceCard key={r.id} s={r} />)}</div>
+        </section>
+      )}
     </div>
   );
 }

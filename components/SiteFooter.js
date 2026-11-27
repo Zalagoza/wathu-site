@@ -8,6 +8,7 @@ const SOCIAL = [['facebook', 'Facebook'], ['instagram', 'Instagram'], ['tiktok',
 export default function SiteFooter({ footer }) {
   const f = footer || {};
   const social = SOCIAL.filter(([k]) => f.social && f.social[k]);
+  const cats = f.cats || [];
   const hasContact = f.address || f.phone || f.email || f.whatsapp;
   return (
     <footer className="site-foot">
@@ -16,6 +17,12 @@ export default function SiteFooter({ footer }) {
           <span className="sf-brand">Wathu Digital Creations</span>
           {f.about && <p className="mute small">{f.about}</p>}
         </div>
+        {cats.length > 0 && (
+          <div>
+            <h4>Services</h4>
+            {cats.map((c) => <Link key={c.slug} href={'/c/' + c.slug}>{c.label}</Link>)}
+          </div>
+        )}
         {hasContact && (
           <div>
             <h4>Contact</h4>

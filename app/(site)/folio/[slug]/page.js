@@ -2,7 +2,8 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { q } from '@/lib/db';
 import { PROJECT_KINDS } from '@/lib/cats';
-import { pageMeta } from '@/lib/seo';
+import { pageMeta, SITE, BRAND } from '@/lib/seo';
+import JsonLd from '@/components/JsonLd';
 import { folioPath, imgs } from '@/lib/text';
 import ShareButton from '@/components/ShareButton';
 
@@ -37,6 +38,7 @@ export default async function ProjectPage({ params }) {
   try { if (p.link_url) host = new URL(p.link_url).host; } catch {}
   return (
     <div className="page">
+      <JsonLd data={{ '@context': 'https://schema.org', '@type': 'CreativeWork', name: p.title, description: p.description || kindLabel(p.kind), url: SITE + folioPath(p), ...(list.length ? { image: list } : {}), dateCreated: new Date(p.created_at).toISOString(), creator: { '@type': 'Organization', name: BRAND, url: SITE } }} />
       <Link href="/folio" className="crumb">← All work</Link>
       <h1>{p.title}</h1>
       <p style={{ marginBottom: 14 }}>

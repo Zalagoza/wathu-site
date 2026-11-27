@@ -4,6 +4,7 @@ import WhatsAppButton from '@/components/WhatsAppButton';
 import CookieBanner from '@/components/CookieBanner';
 import { getUser } from '@/lib/auth';
 import { getFooter } from '@/lib/footer';
+import { getCats } from '@/lib/categories';
 import { q } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
@@ -17,7 +18,9 @@ export default async function SiteLayout({ children }) {
       unread = (await q('select count(*)::int as c from notifications where user_id = $1 and not read', [user.id]))[0].c;
     }
   } catch (e) { console.error('SiteLayout query failed:', e.message); }
-  const footer = await getFooter();
+  let cats = [];
+  try { cats = (await getCats()).map((c) => ({ slug: c.slug, label: c.label })); } catch {}
+  const footer = { ...(await getFooter()), cats };
   return (
     <Shell user={user} recent={recent} unread={unread} footer={footer}>
       {children}

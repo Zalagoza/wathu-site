@@ -39,6 +39,7 @@ export default function Shell({ user, recent, unread, footer, children }) {
 
   return (
     <div className={'shell' + (col ? ' col' : '') + (open ? ' open' : '')}>
+      <a className="skip" href="#content">Skip to content</a>
       <aside className="side">
         <div className="stripe" />
         <div className="side-head">
@@ -83,7 +84,7 @@ export default function Shell({ user, recent, unread, footer, children }) {
         <button className="tb" onClick={() => setOpen(true)} aria-label="Open menu"><span className="tic">☰</span><span>Menu</span></button>
       </nav>
       {open && <div className="scrim" onClick={() => setOpen(false)} />}
-      <div className="main">
+      <div className="main" id="content">
         <div className="topbar">
           <button className="icon-btn" aria-label="Open menu" onClick={() => setOpen(true)}>☰</button>
           <span className="brand"><span className="mark">W</span>Wathu Digital</span>

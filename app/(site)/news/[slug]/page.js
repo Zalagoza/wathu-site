@@ -2,7 +2,8 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { q } from '@/lib/db';
 import { UPDATE_KINDS } from '@/lib/cats';
-import { pageMeta } from '@/lib/seo';
+import { pageMeta, SITE, BRAND } from '@/lib/seo';
+import JsonLd from '@/components/JsonLd';
 import { newsPath, fmtDate } from '@/lib/text';
 import ShareButton from '@/components/ShareButton';
 
@@ -32,6 +33,7 @@ export default async function UpdatePage({ params }) {
   const kind = (UPDATE_KINDS.find(([k]) => k === u.kind) || [])[1] || 'News';
   return (
     <div className="page narrow" style={{ maxWidth: 760 }}>
+      <JsonLd data={{ '@context': 'https://schema.org', '@type': 'Article', headline: u.title, datePublished: new Date(u.published_at).toISOString(), ...(u.image_url ? { image: [u.image_url] } : {}), author: { '@type': 'Organization', name: BRAND, url: SITE }, publisher: { '@id': SITE + '/#business' }, mainEntityOfPage: SITE + newsPath(u) }} />
       <Link href="/news" className="crumb">← All updates</Link>
       <p style={{ marginBottom: 8 }}><span className="pill y">{kind}</span> <span className="mute small">{fmtDate(u.published_at)}</span></p>
       <h1>{u.title}</h1>
