@@ -6,6 +6,7 @@ export async function POST(req) {
   const b = await req.json().catch(() => ({}));
   const path = String(b.path || '').slice(0, 200);
   if (!path || path.startsWith('/wdc-admin')) return Response.json({ ok: true });
+  if (cookies().get('wdc_consent')?.value !== 'yes') return Response.json({ ok: true }); // no consent, no tracking
 
   const h = headers();
   const ua = h.get('user-agent') || '';

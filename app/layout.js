@@ -1,6 +1,7 @@
 import './globals.css';
 import { Montserrat, Poppins } from 'next/font/google';
 import { SITE, BRAND, TAGLINE, ogUrl } from '@/lib/seo';
+import IdleLogout from '@/components/IdleLogout';
 
 const head = Montserrat({ subsets: ['latin'], variable: '--font-head', display: 'swap' });
 const body = Poppins({ subsets: ['latin'], weight: ['400', '500', '600'], variable: '--font-body', display: 'swap' });
@@ -22,7 +23,7 @@ export const viewport = { width: 'device-width', initialScale: 1, themeColor: '#
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={head.variable + ' ' + body.variable}>
-      <body>{children}</body>
+      <body>{children}<IdleLogout /></body>
     </html>
   );
 }

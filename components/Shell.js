@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import SiteFooter from '@/components/SiteFooter';
 
 const NAV = [
   ['/', 'Home', '⌂'],
@@ -23,7 +24,7 @@ const TABS = [
 
 const on = (path, href) => path === href || (href !== '/' && path.startsWith(href));
 
-export default function Shell({ user, recent, unread, children }) {
+export default function Shell({ user, recent, unread, footer, children }) {
   const [open, setOpen] = useState(false);
   const [col, setCol] = useState(false);
   const path = usePathname();
@@ -88,6 +89,7 @@ export default function Shell({ user, recent, unread, children }) {
           <span className="brand"><span className="mark">W</span>Wathu Digital</span>
         </div>
         {children}
+        <SiteFooter footer={footer} />
       </div>
     </div>
   );

@@ -16,7 +16,7 @@ export async function POST(req) {
     return err('Wrong details.', 401);
   }
   await audit('admin_login', ip);
-  setCookie('wdc_admin', await signToken({ role: 'admin' }, '8h'), 1 / 3); // 8-hour session
+  setCookie('wdc_admin', await signToken({ role: 'admin' })); // ends after 15 minutes of inactivity or when the browser closes
   return ok({ ok: true });
 }
 

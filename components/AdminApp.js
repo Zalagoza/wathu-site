@@ -6,6 +6,7 @@ import { TeamAdmin, CertsAdmin } from '@/components/AdminTeam';
 import CategoriesAdmin from '@/components/AdminCategories';
 import { ProjectsAdmin, UpdatesAdmin } from '@/components/AdminWork';
 import { AiSummary, ActivityLog } from '@/components/AdminTools';
+import FooterAdmin from '@/components/AdminFooter';
 import { STATUS } from '@/lib/cats';
 import { money } from '@/lib/util';
 
@@ -34,7 +35,7 @@ export default function AdminApp() {
           <button className="btn sm" onClick={out}>Sign out</button>
         </div>
         <div className="tabs">
-          {[['analytics', 'Analytics'], ['requests', 'Requests'], ['services', 'Services and prices'], ['categories', 'Categories'], ['projects', 'Projects'], ['updates', 'Updates'], ['team', 'Team'], ['certs', 'Certificates'], ['activity', 'Activity']].map(([k, l]) => (
+          {[['analytics', 'Analytics'], ['requests', 'Requests'], ['services', 'Services and prices'], ['categories', 'Categories'], ['projects', 'Projects'], ['updates', 'Updates'], ['team', 'Team'], ['certs', 'Certificates'], ['footer', 'Footer'], ['activity', 'Activity']].map(([k, l]) => (
             <button key={k} className={'tab' + (tab === k ? ' on' : '')} onClick={() => setTab(k)}>{l}</button>
           ))}
         </div>
@@ -46,6 +47,7 @@ export default function AdminApp() {
         {tab === 'updates' && <UpdatesAdmin />}
         {tab === 'team' && <TeamAdmin />}
         {tab === 'certs' && <CertsAdmin />}
+        {tab === 'footer' && <FooterAdmin />}
         {tab === 'activity' && <ActivityLog />}
       </div>
     </div>

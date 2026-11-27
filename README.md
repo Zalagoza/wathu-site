@@ -10,9 +10,12 @@ Next.js 14 + Neon + Vercel Blob + PayChangu.
 
 Admin: open /wdc-admin (not linked anywhere on the public site).
 
+Sign-in sessions (clients and admin) end after 15 minutes without activity and when the browser is closed.
+Change the time with IDLE_MINUTES in lib/auth.js and IDLE_MS in components/IdleLogout.js (keep them equal).
+
 ## Public addresses
 /work (services), /work/12-logo-design (one service), /crew (team), /code (terms of conduct), /tnc (terms),
-/in (sign in), /join (create account), /inbox (messages), /alerts (notifications), /e/ID and /b/ID (request forms), /folio (our work, projects), /news (offers and updates).
+/cookies (cookie policy), /in (sign in), /join (create account), /inbox (messages), /alerts (notifications), /e/ID and /b/ID (request forms), /folio (our work, projects), /news (offers and updates).
 Old addresses redirect to these (see next.config.mjs).
 
 ## Link previews (WhatsApp, Facebook, X)
@@ -21,7 +24,7 @@ To refresh a cached preview use the Facebook Sharing Debugger.
 
 ## Where things live
 - app/(site)      public pages with the sidebar shell
-- app/(admin)     admin dashboard (analytics, requests, services, categories, team, certificates)
+- app/(admin)     admin dashboard (analytics, requests, services, categories, team, certificates, footer)
 - app/api         all backend routes
 - lib/            db, auth, legal text, bot detection, SEO helpers
 - scripts/db-init.mjs   schema and seed data

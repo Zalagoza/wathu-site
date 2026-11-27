@@ -20,6 +20,6 @@ export async function POST(req) {
   if (exists.length) return err('That phone number is already registered. Please sign in.');
   const hash = await bcrypt.hash(String(b.password), 12);
   const u = (await q('insert into users (full_name, phone, location, password_hash) values ($1,$2,$3,$4) returning id', [fullName, phone, location, hash]))[0];
-  setCookie('wdc_session', await signToken({ uid: u.id }, 30), 30);
+  setCookie('wdc_session', await signToken({ uid: u.id }));
   return ok({ ok: true });
 }

@@ -3,6 +3,7 @@ import { neon } from '@neondatabase/serverless';
 const sql = neon(process.env.DATABASE_URL);
 
 const schema = [
+  "create table if not exists settings (key text primary key, value jsonb not null default '{}'::jsonb, updated_at timestamptz not null default now())",
   'create table if not exists users (id serial primary key, full_name text not null, phone text unique not null, location text not null, password_hash text not null, terms_accepted_at timestamptz not null default now(), created_at timestamptz not null default now())',
   "create table if not exists categories (id serial primary key, slug text unique not null, label text not null, blurb text not null default '', icon text not null default '', kind text not null default 'creative' check (kind in ('creative','professional')), refs text not null default 'optional' check (refs in ('required','optional','none')), accent text not null default 'green', active boolean not null default true, sort int not null default 0, created_at timestamptz not null default now())",
   "create table if not exists services (id serial primary key, category text not null, title text not null, description text not null default '', price numeric not null default 0, currency text not null default 'MWK', unit text not null default 'per project', sticker_on boolean not null default false, sticker_text text not null default 'Offer', active boolean not null default true, sort int not null default 0, created_at timestamptz not null default now())",

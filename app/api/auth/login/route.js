@@ -15,6 +15,6 @@ export async function POST(req) {
   const u = (await q('select id, password_hash from users where phone = $1', [phone]))[0];
   const good = await bcrypt.compare(String(b.password || ''), u ? u.password_hash : DUMMY);
   if (!u || !good) { await record(k1); await record(k2); return err('Wrong phone number or password.', 401); }
-  setCookie('wdc_session', await signToken({ uid: u.id }, 30), 30);
+  setCookie('wdc_session', await signToken({ uid: u.id }));
   return ok({ ok: true });
 }
