@@ -1,6 +1,7 @@
 import { q } from '@/lib/db';
 import { isAdmin } from '@/lib/auth';
 import { STATUS } from '@/lib/cats';
+import { audit } from '@/lib/audit';
 import { ok, err } from '@/lib/util';
 
 const NOTE = {
@@ -17,5 +18,6 @@ export async function PATCH(req, { params }) {
   if (!e) return err('Not found', 404);
   await q("insert into messages (engagement_id, sender, body) values ($1,'system',$2)", [e.id, 'Status changed to: ' + STATUS[status]]);
   if (NOTE[status]) await q("insert into notifications (user_id, engagement_id, kind, title, body) values ($1,$2,'status',$3,$4)", [e.user_id, e.id, NOTE[status][0], NOTE[status][1]]);
+  await audit('request_status', 'request ' + params.id + ' to ' + status);
   return ok({ ok: true });
 }

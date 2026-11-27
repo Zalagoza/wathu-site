@@ -3,8 +3,12 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { shrink } from '@/lib/shrink';
 
-export default function BriefForm({ serviceId, refsMode = 'optional' }) {
+export default function BriefForm({ serviceId, refsMode = 'optional', ai = false }) {
   const router = useRouter();
+  const [idea, setIdea] = useState('');
+  const [aiBusy, setAiBusy] = useState(false);
+  const [aiMsg, setAiMsg] = useState('');
+  const [tips, setTips] = useState([]);
   const [v, setV] = useState({ title: '', description: '', style: '', deadline: '' });
   const [files, setFiles] = useState([null, null, null]);
   const [error, setError] = useState('');
@@ -12,6 +16,18 @@ export default function BriefForm({ serviceId, refsMode = 'optional' }) {
   const set = (k) => (e) => setV({ ...v, [k]: e.target.value });
   const showRefs = refsMode !== 'none';
   const picked = showRefs ? files.filter(Boolean) : [];
+
+  async function draft() {
+    setAiBusy(true); setAiMsg(''); setTips([]);
+    try {
+      const r = await fetch('/api/ai/brief', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ serviceId, idea }) });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(d.error || 'The brief helper is not available.');
+      setV((x) => ({ ...x, title: d.title || x.title, description: d.description || x.description, style: d.style || x.style }));
+      setTips(d.tips || []);
+    } catch (e2) { setAiMsg(e2.message); }
+    setAiBusy(false);
+  }
 
   async function submit(e) {
     e.preventDefault();
@@ -45,6 +61,21 @@ export default function BriefForm({ serviceId, refsMode = 'optional' }) {
 
   return (
     <form onSubmit={submit}>
+      {ai && (
+        <div className="panel" style={{ marginBottom: 18 }}>
+          <label>Not sure how to write it? Describe it in a sentence or two and we will draft your brief (AI)</label>
+          <textarea style={{ minHeight: 70 }} value={idea} onChange={(e) => setIdea(e.target.value)} placeholder="e.g. A flyer for our church youth conference on 14 December" />
+          <p className="mute small">This uses an outside AI service, so please do not include private or sensitive details. You can edit everything afterwards.</p>
+          <button type="button" className="btn" disabled={aiBusy || idea.trim().length < 10} onClick={draft}>{aiBusy ? 'Drafting...' : 'Draft my brief'}</button>
+          {aiMsg && <p className="error" style={{ marginTop: 10 }}>{aiMsg}</p>}
+          {tips.length > 0 && (
+            <div style={{ marginTop: 12 }}>
+              <p className="small mute" style={{ marginBottom: 4 }}>Worth adding to your brief:</p>
+              <ul className="small mute" style={{ margin: 0, paddingLeft: 18 }}>{tips.map((t, i) => <li key={i}>{t}</li>)}</ul>
+            </div>
+          )}
+        </div>
+      )}
       <div className="field"><label>Project title</label><input className="input" value={v.title} onChange={set('title')} required /></div>
       <div className="field"><label>Your brief: what do you need and who is it for?</label><textarea value={v.description} onChange={set('description')} required /></div>
       <div className="field"><label>Style, colours or mood (optional)</label><input className="input" value={v.style} onChange={set('style')} /></div>

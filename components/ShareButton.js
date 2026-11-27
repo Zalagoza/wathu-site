@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 
-export default function ShareButton({ title, text }) {
+export default function ShareButton({ title, text, label = 'Share this service' }) {
   const [done, setDone] = useState(false);
   async function share() {
     const url = window.location.href;
@@ -12,5 +12,5 @@ export default function ShareButton({ title, text }) {
       setTimeout(() => setDone(false), 2000);
     } catch {}
   }
-  return <button type="button" className="btn" onClick={share}>{done ? 'Link copied' : 'Share this service'}</button>;
+  return <button type="button" className="btn" onClick={share}>{done ? 'Link copied' : label}</button>;
 }

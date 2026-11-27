@@ -6,6 +6,8 @@ import { useEffect, useState } from 'react';
 const NAV = [
   ['/', 'Home', '⌂'],
   ['/work', 'Services', '▦'],
+  ['/folio', 'Our work', '◩'],
+  ['/news', 'News', '✦'],
   ['/inbox', 'Messages', '✉'],
   ['/alerts', 'Notifications', '●'],
   ['/crew', 'Our team', '☺'],

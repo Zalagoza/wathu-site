@@ -15,7 +15,7 @@ export async function POST(req) {
   if (clean(b.title).length < 2) return err('Enter a title.');
   const pro = cat.kind === 'professional';
   const row = (await q(
-    'insert into services (category,title,description,price,currency,unit,sticker_on,sticker_text,active,sort) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,(select coalesce(max(sort),-1)+1 from services)) returning *',
+    'insert into services (category,title,description,price,currency,unit,sticker_on,sticker_text,active,sort) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,(select coalesce(min(sort),1) - 1 from services)) returning *',
     [b.category, clean(b.title, 150), clean(b.description, 600), Number(b.price) || 0, clean(b.currency, 5) || 'MWK', clean(b.unit, 40) || 'per project', pro ? false : !!b.sticker_on, clean(b.sticker_text, 20) || 'Offer', b.active !== false]
   ))[0];
   return ok({ service: row });

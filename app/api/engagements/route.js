@@ -1,11 +1,14 @@
 import { q } from '@/lib/db';
 import { getUser } from '@/lib/auth';
 import { SERVICE_SELECT } from '@/lib/categories';
+import { blocked, record } from '@/lib/limit';
+import { alertOwner } from '@/lib/alerts';
 import { ok, err, clean } from '@/lib/util';
 
 export async function POST(req) {
   const user = await getUser();
   if (!user) return err('Please sign in.', 401);
+  if (await blocked('eng:' + user.id, 10, 3600)) return err('You have sent several requests in a short time. Please wait a little.', 429);
   const b = await req.json().catch(() => ({}));
   const s = (await q(SERVICE_SELECT + ' where s.id = $1 and s.active and c.active', [Number(b.serviceId)]))[0];
   if (!s) return err('Service not found.', 404);
@@ -29,5 +32,7 @@ export async function POST(req) {
     row = (await q("insert into engagements (user_id, service_id, kind, status, brief, refs) values ($1,$2,'creative','submitted',$3,$4) returning id", [user.id, s.id, JSON.stringify(brief), JSON.stringify(refs)]))[0];
     await q("insert into messages (engagement_id, sender, body) values ($1,'system',$2)", [row.id, 'Brief received: ' + brief.title + '. We will reply here.']);
   }
+  await record('eng:' + user.id);
+  await alertOwner('new', row.id); // WhatsApp alert to the owner
   return ok({ id: row.id });
 }

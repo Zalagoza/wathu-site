@@ -3,6 +3,7 @@ import { getUser } from '@/lib/auth';
 import { q } from '@/lib/db';
 import { SERVICE_SELECT } from '@/lib/categories';
 import BriefForm from '@/components/BriefForm';
+import { aiEnabled } from '@/lib/ai';
 
 export const metadata = { title: 'Start a brief', robots: { index: false, follow: false } };
 
@@ -21,7 +22,7 @@ export default async function Brief({ params }) {
     <div className="page narrow">
       <h1>{s.title}</h1>
       <p className="mute">Tell us what you need. {HINT[s.cat_refs] || HINT.optional}</p>
-      <BriefForm serviceId={s.id} refsMode={s.cat_refs} />
+      <BriefForm serviceId={s.id} refsMode={s.cat_refs} ai={aiEnabled()} />
     </div>
   );
 }

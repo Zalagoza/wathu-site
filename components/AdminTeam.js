@@ -12,9 +12,9 @@ export async function call(path, method, data) {
   } catch { return { error: 'Network error.' }; }
 }
 
-async function upload(file, kind) {
+export async function upload(file, kind) {
   const fd = new FormData();
-  fd.append('file', await shrink(file, kind === 'cert' ? 2400 : 1000, kind === 'cert' ? 0.88 : 0.85));
+  fd.append('file', await shrink(file, kind === 'cert' ? 2400 : kind === 'work' ? 1800 : 1000, kind === 'cert' ? 0.88 : kind === 'work' ? 0.85 : 0.85));
   fd.append('kind', kind);
   try {
     const r = await fetch('/api/admin/upload', { method: 'POST', body: fd });

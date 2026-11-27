@@ -12,7 +12,7 @@ Admin: open /wdc-admin (not linked anywhere on the public site).
 
 ## Public addresses
 /work (services), /work/12-logo-design (one service), /crew (team), /code (terms of conduct), /tnc (terms),
-/in (sign in), /join (create account), /inbox (messages), /alerts (notifications), /e/ID and /b/ID (request forms).
+/in (sign in), /join (create account), /inbox (messages), /alerts (notifications), /e/ID and /b/ID (request forms), /folio (our work, projects), /news (offers and updates).
 Old addresses redirect to these (see next.config.mjs).
 
 ## Link previews (WhatsApp, Facebook, X)

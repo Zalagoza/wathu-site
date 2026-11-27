@@ -4,6 +4,8 @@ import { useRouter } from 'next/navigation';
 import Chat from '@/components/Chat';
 import { TeamAdmin, CertsAdmin } from '@/components/AdminTeam';
 import CategoriesAdmin from '@/components/AdminCategories';
+import { ProjectsAdmin, UpdatesAdmin } from '@/components/AdminWork';
+import { AiSummary, ActivityLog } from '@/components/AdminTools';
 import { STATUS } from '@/lib/cats';
 import { money } from '@/lib/util';
 
@@ -32,7 +34,7 @@ export default function AdminApp() {
           <button className="btn sm" onClick={out}>Sign out</button>
         </div>
         <div className="tabs">
-          {[['analytics', 'Analytics'], ['requests', 'Requests'], ['services', 'Services and prices'], ['categories', 'Categories'], ['team', 'Team'], ['certs', 'Certificates']].map(([k, l]) => (
+          {[['analytics', 'Analytics'], ['requests', 'Requests'], ['services', 'Services and prices'], ['categories', 'Categories'], ['projects', 'Projects'], ['updates', 'Updates'], ['team', 'Team'], ['certs', 'Certificates'], ['activity', 'Activity']].map(([k, l]) => (
             <button key={k} className={'tab' + (tab === k ? ' on' : '')} onClick={() => setTab(k)}>{l}</button>
           ))}
         </div>
@@ -40,8 +42,11 @@ export default function AdminApp() {
         {tab === 'requests' && <Requests />}
         {tab === 'services' && <Services />}
         {tab === 'categories' && <CategoriesAdmin />}
+        {tab === 'projects' && <ProjectsAdmin />}
+        {tab === 'updates' && <UpdatesAdmin />}
         {tab === 'team' && <TeamAdmin />}
         {tab === 'certs' && <CertsAdmin />}
+        {tab === 'activity' && <ActivityLog />}
       </div>
     </div>
   );
@@ -157,6 +162,7 @@ function Requests() {
               {msg && <p className="okmsg">{msg}</p>}
               <button className="btn gold" onClick={bill}>Send billing notice</button>
             </div>
+            <AiSummary id={e.id} kind={e.kind} />
             <Chat id={e.id} admin />
           </div>
         )}

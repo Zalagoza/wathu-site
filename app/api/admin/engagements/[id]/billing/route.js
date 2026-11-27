@@ -1,5 +1,6 @@
 import { q } from '@/lib/db';
 import { isAdmin } from '@/lib/auth';
+import { audit } from '@/lib/audit';
 import { ok, err, clean, money } from '@/lib/util';
 
 export async function POST(req, { params }) {
@@ -14,5 +15,6 @@ export async function POST(req, { params }) {
   await q("insert into notifications (user_id, engagement_id, kind, title, body) values ($1,$2,'billing','Billing notice: 50% deposit requested',$3)",
     [e.user_id, e.id, 'Total ' + money(total, e.currency) + '. Please pay ' + money(deposit, e.currency) + ' before work starts.']);
   await q("insert into messages (engagement_id, sender, body) values ($1,'system',$2)", [e.id, 'Billing notice sent. Total ' + money(total, e.currency) + ', deposit due ' + money(deposit, e.currency) + '.']);
+  await audit('billing_sent', 'request ' + params.id + ' total ' + total);
   return ok({ ok: true, deposit });
 }

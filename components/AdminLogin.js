@@ -9,7 +9,7 @@ export default function AdminLogin() {
   async function submit(e) {
     e.preventDefault();
     const r = await fetch('/api/admin/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(v) });
-    if (!r.ok) return setError('Wrong details.');
+    if (!r.ok) { const d = await r.json().catch(() => ({})); return setError(d.error || 'Wrong details.'); }
     router.refresh();
   }
   return (

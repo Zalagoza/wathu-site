@@ -20,7 +20,7 @@ export default function AuthForm({ mode, next }) {
     const d = await r.json().catch(() => ({}));
     setBusy(false);
     if (!r.ok) return setError(d.error || 'Something went wrong.');
-    router.push(next && next.startsWith('/') ? next : '/');
+    router.push(next && next.startsWith('/') && !next.startsWith('//') ? next : '/');
     router.refresh();
   }
 
@@ -33,7 +33,7 @@ export default function AuthForm({ mode, next }) {
       {signup && (
         <div className="field"><label>Location</label><input className="input" autoComplete="address-level2" placeholder="City or town" value={v.location} onChange={set('location')} required /></div>
       )}
-      <div className="field"><label>Password</label><input className="input" type="password" autoComplete={signup ? 'new-password' : 'current-password'} minLength={6} value={v.password} onChange={set('password')} required /></div>
+      <div className="field"><label>Password</label><input className="input" type="password" autoComplete={signup ? 'new-password' : 'current-password'} minLength={8} value={v.password} onChange={set('password')} required /></div>
       {signup && (
         <label className="check"><input type="checkbox" checked={v.accept} onChange={set('accept')} />
           <span>I have read and accept the <Link href="/tnc" target="_blank" style={{ color: 'var(--gold)' }}>Terms and Conditions</Link>.</span>

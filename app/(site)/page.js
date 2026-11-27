@@ -2,13 +2,21 @@ import Link from 'next/link';
 import { q } from '@/lib/db';
 import { SERVICE_SELECT, getCats } from '@/lib/categories';
 import ServiceCard from '@/components/ServiceCard';
+import ProjectCard from '@/components/ProjectCard';
+import UpdateCard from '@/components/UpdateCard';
+import { getUser } from '@/lib/auth';
 
 export default async function Home() {
-  let services = [], cats = [];
+  let services = [], cats = [], projects = [], updates = [], user = null;
+  try { user = await getUser(); } catch {}
   try {
     cats = await getCats();
-    services = await q(SERVICE_SELECT + ' where s.active and c.active order by s.sort, s.id limit 6');
+    services = await q(SERVICE_SELECT + " where s.active and c.active order by (s.sticker_on and c.kind <> 'professional') desc, s.sort, s.id limit 6");
   } catch (e) { console.error('Home query failed:', e.message); }
+  try {
+    projects = await q('select * from projects where active order by featured desc, sort, id desc limit 3');
+    updates = await q('select * from updates where active order by pinned desc, published_at desc, id desc limit 3');
+  } catch (e) { console.error('Home work/news query failed:', e.message); }
   return (
     <div className="page">
       <section className="hero">
@@ -17,7 +25,7 @@ export default async function Home() {
         <p>Wathu Digital Creations designs, builds, photographs and films for brands and events, and helps people and organisations with digital forensics, cybersecurity and ICT support.</p>
         <div className="row">
           <Link href="/work" className="btn gold">Browse services</Link>
-          <Link href="/join" className="btn">Create an account</Link>
+          {user ? <Link href="/inbox" className="btn">My messages</Link> : <Link href="/join" className="btn">Create an account</Link>}
           <Link href="/crew" className="btn">Meet our team</Link>
         </div>
       </section>
@@ -33,8 +41,31 @@ export default async function Home() {
 
       {services.length > 0 && (
         <section>
-          <h2>Popular services</h2>
+          <div className="row" style={{ justifyContent: 'space-between', marginBottom: 10 }}>
+            <h2 style={{ margin: 0 }}>Popular services</h2>
+            <Link href="/work" className="btn sm">All services</Link>
+          </div>
           <div className="grid">{services.map((s) => <ServiceCard key={s.id} s={s} />)}</div>
+        </section>
+      )}
+
+      {projects.length > 0 && (
+        <section style={{ marginTop: 44 }}>
+          <div className="row" style={{ justifyContent: 'space-between', marginBottom: 10 }}>
+            <h2 style={{ margin: 0 }}>Recent work</h2>
+            <Link href="/folio" className="btn sm">See all work</Link>
+          </div>
+          <div className="proj-grid">{projects.map((p) => <ProjectCard key={p.id} p={p} />)}</div>
+        </section>
+      )}
+
+      {updates.length > 0 && (
+        <section style={{ marginTop: 44 }}>
+          <div className="row" style={{ justifyContent: 'space-between', marginBottom: 10 }}>
+            <h2 style={{ margin: 0 }}>Latest updates</h2>
+            <Link href="/news" className="btn sm">All updates</Link>
+          </div>
+          {updates.map((u) => <UpdateCard key={u.id} u={u} />)}
         </section>
       )}
 

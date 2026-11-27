@@ -1,5 +1,6 @@
 import Shell from '@/components/Shell';
 import Tracker from '@/components/Tracker';
+import WhatsAppButton from '@/components/WhatsAppButton';
 import { getUser } from '@/lib/auth';
 import { q } from '@/lib/db';
 
@@ -18,6 +19,7 @@ export default async function SiteLayout({ children }) {
     <Shell user={user} recent={recent} unread={unread}>
       {children}
       <Tracker />
+      <WhatsAppButton />
     </Shell>
   );
 }

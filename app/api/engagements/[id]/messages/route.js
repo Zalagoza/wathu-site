@@ -1,5 +1,7 @@
 import { q } from '@/lib/db';
 import { getUser, isAdmin } from '@/lib/auth';
+import { blocked, record } from '@/lib/limit';
+import { alertOwner } from '@/lib/alerts';
 import { ok, err, clean } from '@/lib/util';
 
 async function access(id) {
@@ -34,7 +36,12 @@ export async function POST(req, { params }) {
   if (!e) return err('Not found', 404);
   const body = clean((await req.json().catch(() => ({}))).body, 3000);
   if (!body) return err('Empty message.');
+  if (!admin) {
+    if (await blocked('msg:' + e.user_id, 30, 300)) return err('You are sending messages too fast. Please wait a moment.', 429);
+    await record('msg:' + e.user_id);
+  }
   await q('insert into messages (engagement_id, sender, body) values ($1,$2,$3)', [e.id, admin ? 'admin' : 'user', body]);
+  if (!admin) await alertOwner('message', e.id, body); // WhatsApp alert (no text for professional matters)
   if (admin) {
     const pending = await q("select 1 from notifications where engagement_id = $1 and kind = 'message' and not read", [e.id]);
     if (!pending.length) await q("insert into notifications (user_id, engagement_id, kind, title, body) values ($1,$2,'message','New message from Wathu Digital',$3)", [e.user_id, e.id, body.slice(0, 120)]);
