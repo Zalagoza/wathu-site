@@ -69,4 +69,35 @@ for (const [slug, label, blurb, icon, kind, refs, accent] of cats) {
   }
   console.log('Added category: ' + label);
 }
+// Team members added by the scaffold. Added only if no member with the same name exists yet, so running db:init again never duplicates.
+// Edit role, photo and text any time from /wdc-admin -> Team. Qualifications and experience: one item per line. Skills: comma separated.
+const team = [
+  {
+    name: 'Pillow Ishmael Absent',
+    role: 'Team Member',
+    photo_url: '',
+    qualifications: [
+      'Bachelor of Social Science in Law Enforcement Management and Leadership, University of Malawi (2022 - 2026)',
+      'Malawi School Certificate of Education (MSCE), Blantyre Secondary School',
+    ].join('\n'),
+    skills: [
+      'Investigative techniques', 'Crime scene analysis', 'Evidence collection', 'Forensic document examination',
+      'Fraud analysis', 'Report writing', 'Legal compliance', 'Conflict resolution', 'Sales and marketing',
+      'Publicity and communications', 'Community engagement', 'English, Chichewa and Yao',
+    ].join(', '),
+    experience: [
+      'Sales Representative, Polymed SACCO Limited: promoted savings, loans and investment products, ran field outreach and client presentations, and met sales targets.',
+      'Publicity Secretary, UNIMA Law Enforcement Society: handled publicity, announcements and liaison with law enforcement stakeholders.',
+      'Disciplinary Officer and Complaint Officer, UNIMA Let Love Lead Organization: investigated conduct breaches and complaints, advised leadership and kept accurate records.',
+      'Laboratory Prefect, Blantyre Secondary School: oversaw laboratory safety, order and equipment care.',
+    ].join('\n'),
+  },
+];
+for (const m of team) {
+  const added = await sql(
+    'insert into team (name, role, photo_url, qualifications, skills, experience, sort) select $1,$2,$3,$4,$5,$6,(select coalesce(max(sort),-1)+1 from team) where not exists (select 1 from team where name = $1) returning name',
+    [m.name, m.role, m.photo_url, m.qualifications, m.skills, m.experience]
+  );
+  if (added.length) console.log('Added team member: ' + m.name);
+}
 console.log('Database ready.');
