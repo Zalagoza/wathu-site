@@ -73,6 +73,30 @@ for (const [slug, label, blurb, icon, kind, refs, accent] of cats) {
 // Edit role, photo and text any time from /wdc-admin -> Team. Qualifications and experience: one item per line. Skills: comma separated.
 const team = [
   {
+    // top: show first on the page. refresh: if he already exists (e.g. added by hand in the admin), update his details instead of skipping.
+    name: 'Kingsley Phiri',
+    role: 'C.E.O',
+    photo_url: '',
+    top: true,
+    refresh: true,
+    qualifications: [
+      'Bachelor of Social Science in Law Enforcement Management and Leadership (Forensic Science), University of Malawi (2026)',
+      'Certificate in Accounting and Finance, Public Accountants Examination Council (now ICAM)',
+      'Malawi School Certificate of Education (MSCE)',
+    ].join('\n'),
+    skills: [
+      'Photography', 'Programming', 'Graphic design', 'Video editing and production', 'Web development',
+      'Digital forensics', 'ICT support', 'Data recovery', 'Fraud detection', 'Branding',
+    ].join(', '),
+    experience: [
+      'Founder, Wathu Digital Creations: designs, builds, hosts and maintains websites for clients and produces branding, print and digital graphics.',
+      'ICT Support Officer, Department of Immigration and Citizenship Services, Kamuzu International Airport (2026 - present): administers the Migration Information and Data Analysis System (MIDAS) and provides ICT support, backup and recovery.',
+      'ICT Help Desk Assistant (2022 - 2023) and Data Clerk (2019 - 2022), Department of Immigration and Citizenship Services.',
+      'Freelance Photographer (2016 - 2019): event and portrait photography, image processing and photo recovery.',
+      'Research: impact of the absence of forensic document examination in detecting fraudulent documents at Kamuzu International Airport.',
+    ].join('\n'),
+  },
+  {
     name: 'Pillow Ishmael Absent',
     role: 'Team Member',
     photo_url: '',
@@ -94,10 +118,16 @@ const team = [
   },
 ];
 for (const m of team) {
+  const sortExpr = m.top ? '(select coalesce(min(sort),1)-1 from team)' : '(select coalesce(max(sort),-1)+1 from team)';
   const added = await sql(
-    'insert into team (name, role, photo_url, qualifications, skills, experience, sort) select $1,$2,$3,$4,$5,$6,(select coalesce(max(sort),-1)+1 from team) where not exists (select 1 from team where name = $1) returning name',
+    'insert into team (name, role, photo_url, qualifications, skills, experience, sort) select $1,$2,$3,$4,$5,$6,' + sortExpr + ' where not exists (select 1 from team where name = $1) returning name',
     [m.name, m.role, m.photo_url, m.qualifications, m.skills, m.experience]
   );
-  if (added.length) console.log('Added team member: ' + m.name);
+  if (added.length) { console.log('Added team member: ' + m.name); continue; }
+  if (m.refresh) {
+    // keeps any photo already uploaded in the admin
+    await sql('update team set role=$2, qualifications=$3, skills=$4, experience=$5 where name=$1', [m.name, m.role, m.qualifications, m.skills, m.experience]);
+    console.log('Updated team member: ' + m.name);
+  }
 }
 console.log('Database ready.');
